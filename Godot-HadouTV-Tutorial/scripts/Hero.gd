@@ -6,14 +6,21 @@ const GRAVITY = 20
 const SPEED = 20000
 const JUMP_HEIGHT = -650
 
+## o Godot trata do vector de forma contraria sendo quando mais positivo, mas para baixo
+## negativo para cima
+
 # Variables
 var motion = Vector2()
 
 # When our Hero is ready
 func _ready():
-	$Sprite.flip_h = false
+	$Sprite.flip_h = false #evita que tenha sprites para cada direção de lado
+	#var node = get_node("Sprite")
 
 # Infinite loop
+# _physics_process é otimizado para trabalhar com física do personagem
+# delta é cada ciclo de máquina
+
 func _physics_process(delta):
 	var speed = SPEED * delta
 	motion.y += GRAVITY
@@ -29,7 +36,7 @@ func _physics_process(delta):
 			
 		motion.x = speed
 	else:
-		$Sprite.play('idle')
+		$Sprite.play('idle') # parado
 		motion.x = 0
 
 	if is_on_floor():
@@ -39,3 +46,4 @@ func _physics_process(delta):
 		$Sprite.play('jump')
 
 	motion = move_and_slide(motion, UP)
+	# move_and_slide atualiza de modo suave
