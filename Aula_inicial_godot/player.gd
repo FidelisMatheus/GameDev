@@ -4,23 +4,52 @@ extends KinematicBody2D
 # move_and_slide works.
 
 # Member variables
-const MOTION_SPEED = 160 # Pixels/second
+const MOTION_SPEED = 160 * 2 # Pixels/second
 
+var vida = 100;
+
+func updateVida():
+	var barraProgresso = get_tree().get_root().get_node("colworld").get_node("CanvasLayer").get_node("TextureProgress")
+	barraProgresso.set_value(vida)
+	
+	if(vida <= 0):
+		get_tree().reload_current_scene()
 
 func _physics_process(_delta):
+	updateVida()
+	
 	var motion = Vector2()
+	var moved = false
 	
 	if Input.is_action_pressed("move_up"):
 		motion += Vector2(0, -1)
-	if Input.is_action_pressed("move_bottom"):
+		moved = true
+	elif Input.is_action_pressed("move_bottom"):
 		motion += Vector2(0, 1)
+		moved = true
 
 	if Input.is_action_pressed("move_left"):
 		motion += Vector2(-1, 0)
-		print("esquerda")
-	if Input.is_action_pressed("move_right"):
+		moved = true
+		get_node("AnimatedSprite").flip_h = true
+	elif Input.is_action_pressed("move_right"):
 		motion += Vector2(1, 0)
+		moved = true
+		get_node("AnimatedSprite").flip_h = false
 	
 	motion = motion.normalized() * MOTION_SPEED
 
 	move_and_slide(motion)
+	if(moved):
+		get_node("AnimatedSprite").play("andando")
+	else:
+		get_node("AnimatedSprite").stop()
+
+	if(Input.is_key_pressed(KEY_SPACE)):
+		var flagPacked = preload("res://dano.tscn")
+			
+
+		var flag = flagPacked.instance()
+		flag.position = position;
+			
+		get_tree().get_root().add_child(flag)
